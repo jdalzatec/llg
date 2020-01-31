@@ -452,3 +452,41 @@ def animate_states(output, step, size, mode, colormap, fps):
         animation.write_gif(output, fps=fps)
     else:
         animation.write_videofile(output, fps=fps)
+
+
+
+
+
+@main.command("compute-evolution")
+def compute_evolution():
+    simulation_information = pickle.loads(eval(input()))
+
+    num_TH = simulation_information["num_TH"]
+    num_iterations = simulation_information["num_iterations"]
+    temperature = simulation_information["temperature"]
+    field = simulation_information["field"]
+    types = numpy.array(simulation_information["types"])
+    set_types = sorted(set(types))
+
+    header = ""
+    for t in set_types:
+        header += f"{t}_x,{t}_y,{t}_z,"
+    header = header[:-1]
+    print(f"time,T,H,{header}")
+    for i in range(num_TH):
+        T = temperature[i]
+        H = field[i]
+        for j in range(num_iterations):
+            # reads
+            print(f"{j},{T},{H},", end="")
+            state = pickle.loads(eval(input()))
+            _ = pickle.loads(eval(input()))
+            _ = pickle.loads(eval(input()))
+            _ = pickle.loads(eval(input()))
+            _ = pickle.loads(eval(input()))
+
+            line = ""
+            for t in set_types:
+                line += ",".join(map(str, state[types == t].mean(axis=0))) + ","
+            line = line[:-1]
+            print(line)
